@@ -11,7 +11,9 @@ app.get("/joininfo/:username", async (req, res) => {
     const userRes = await axios.get(`https://api.roblox.com/users/get-by-username?username=${username}`);
     const userId = userRes.data.Id;
 
-    if (!userId) return res.status(404).json({ error: "User not found" });
+    if (!userId) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
     const presenceRes = await axios.post(
       "https://presence.roblox.com/v1/presence/users",
@@ -30,15 +32,19 @@ app.get("/joininfo/:username", async (req, res) => {
         lastLocation: data.lastLocation
       });
     } else {
-      return res.json({ status: "Offline", userId });
+      return res.json({
+        status: "Offline",
+        userId: userId
+      });
     }
+
   } catch (err) {
     console.error("Backend error:", err.message);
     res.status(500).json({ error: "Internal error" });
   }
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 app.listen(port, () => {
-  console.log(`✅ Backend is running on port ${port}`);
+  console.log(`✅ Backend running on port ${port}`);
 });
